@@ -17,6 +17,7 @@ import java.net.Socket;
 
 public class ChatApp extends Application {
 
+
     private static BufferedReader reader;
     private static PrintWriter writer;
     private TextArea messages = new TextArea();
