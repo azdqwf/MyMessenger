@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane alignment="center" hgap="10" prefHeight="412.0" prefWidth="466.0" vgap="10"
+          xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="client.ClientChatController">
+    <columnConstraints>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+    </rowConstraints>
+    <TextArea fx:id="messages" prefHeight="309.0" prefWidth="438.0" BorderPane.alignment="CENTER"/>
+    <TextField fx:id="textField" GridPane.rowIndex="1"/>
+    <Button fx:id="sendButton" mnemonicParsing="false" onAction="#sendButtonClicked" text="Send"
+            GridPane.halignment="CENTER" GridPane.rowIndex="2"/>
+</GridPane>
