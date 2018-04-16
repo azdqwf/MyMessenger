@@ -1,6 +1,5 @@
 package client;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -14,9 +13,9 @@ public class ClientChatController {
     private PrintWriter writer;
     private NetConnection connection;
 
-    {
-           //this.connection = new NetConnection();
-    }
+//    {
+//           //this.connection = new NetConnection();
+//    }
 
     @FXML
     private Button sendButton;
