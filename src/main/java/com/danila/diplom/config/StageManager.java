@@ -1,40 +1,75 @@
 package com.danila.diplom.config;
 
 
-import com.danila.diplom.view.FxmlView;
+import com.danila.diplom.Main;
+import com.danila.diplom.client.AuthorizationController;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
  * Manages switching Scenes on the Primary Stage
  */
-@Component
+
+
 public class StageManager {
 
     private final Stage primaryStage;
-    private final SpringFXMLLoader springFXMLLoader;
+    private Scene scene;
 
-
-    @Autowired
-    public StageManager(SpringFXMLLoader springFXMLLoader, Stage stage) {
-        this.springFXMLLoader = springFXMLLoader;
+    public StageManager(Stage stage) {
         this.primaryStage = stage;
     }
 
-    public void switchScene(final FxmlView view) {
-        Parent viewRootNodeHierarchy = loadViewNodeHierarchy(view.getFxmlFile());
-        show(viewRootNodeHierarchy, view.getTitle());
+    public void switchScene(String path, String title) {
+
+        Parent viewRootNodeHierarchy = null;
+        try {
+            viewRootNodeHierarchy = FXMLLoader.load(getClass().getResource(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        show(viewRootNodeHierarchy, title);
+    }
+
+    public void showLoginScreen() {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/authorization.fxml")
+            );
+            Parent root = loader.load();
+            AuthorizationController controller = loader.getController();
+
+            (Main.springContext).getAutowireCapableBeanFactory().autowireBean(controller);
+
+            ((GenericApplicationContext) Main.springContext).registerBean(AuthorizationController.class, () -> controller);
+
+            AuthorizationController bean = Main.springContext.getBean(AuthorizationController.class);
+
+            System.out.println(bean == controller);
+
+            controller.initManager(this);
+            show(root, "Auth");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void show(final Parent rootnode, String title) {
-        Scene scene = prepareScene(rootnode);
+        scene = primaryStage.getScene();
+
+        if (scene == null) {
+            scene = new Scene(rootnode);
+        }
+        scene.setRoot(rootnode);
 
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
@@ -48,26 +83,7 @@ public class StageManager {
         }
     }
 
-    private Scene prepareScene(Parent rootnode) {
-        Scene scene = primaryStage.getScene();
 
-        if (scene == null) {
-            scene = new Scene(rootnode);
-        }
-        scene.setRoot(rootnode);
-        return scene;
-    }
-
-    private Parent loadViewNodeHierarchy(String fxmlFilePath) {
-        Parent rootNode = null;
-        try {
-            rootNode = springFXMLLoader.load(fxmlFilePath);
-            Objects.requireNonNull(rootNode, "A Root FXML node must not be null");
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-        return rootNode;
-    }
 
 
 }

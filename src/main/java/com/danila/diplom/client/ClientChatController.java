@@ -51,8 +51,6 @@ public class ClientChatController {
 
     @FXML
     public void sendButtonClicked() {
-        chatsList.getItems().addAll(new User("Vasea", "", ""));
-//       connection.getWriter().print("hi");
         messages.appendText(textField.getText() + "\n");
         textField.clear();
     }

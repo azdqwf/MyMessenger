@@ -1,10 +1,15 @@
 package com.danila.diplom.client;
 
+import com.danila.diplom.Main;
+import com.danila.diplom.config.StageManager;
 import com.danila.diplom.repository.UserRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -22,21 +27,14 @@ public class AuthorizationController {
     private Button okButton;
 
 
-//    public TextField getNameField() {
-//        return nameField;
-//    }
-//
-//    public TextField getPasswordField() {
-//        return passwordField;
-//    }
 
-
-    public void initManager(AuthorizationManager manager) throws IOException {
+    public void initManager(StageManager manager) throws IOException {
+      //  userRepository = Main.springContext.getBean(UserRepository.class);
         okButton.setOnAction((e) -> {
             if (AuthorizationManager.isValid(userRepository, nameField.getText(), passwordField.getText())) {
-                manager.showMainView();
+                manager.switchScene("/clientChat.fxml", "Chat");
             } else {
-                System.out.println("not ok");
+                System.out.println("ok");
             }
         });
 
