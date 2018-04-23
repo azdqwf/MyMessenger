@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane prefHeight="201.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.AuthorizationController">
+<Pane prefHeight="201.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.danila.diplom.client.AuthorizationController">
 
-    <Label layoutX="65.0" layoutY="44.0" prefHeight="22.0" prefWidth="54.0" text="Name">
+    <Label layoutX="65.0" layoutY="44.0" prefHeight="22.0" prefWidth="54.0" text="Login">
         <font>
             <Font size="14.0" />
         </font>
