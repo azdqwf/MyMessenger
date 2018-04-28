@@ -1,34 +1,42 @@
 package com.danila.diplom.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import com.danila.diplom.entity.User;
+
+import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class NetConnection {
-    private BufferedReader reader;
-    private PrintWriter writer;
 
-    public BufferedReader getReader() {
-        return reader;
+
+    User user1;
+    User user2;
+    Socket socket;
+
+    public NetConnection(User user1, User user2) {
+        this.user1 = user1;
+        this.user2 = user2;
     }
 
-    public PrintWriter getWriter() {
-        return writer;
-    }
-
-
-    NetConnection() {
+    public void init() {
         try {
-            Socket socket = new Socket("127.0.0.1", 5000);
-            InputStreamReader is = new InputStreamReader(socket.getInputStream());
-            reader = new BufferedReader(is);
-            writer = new PrintWriter(socket.getOutputStream());
+            socket = new Socket("127.0.0.1", 25000);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            //Send the message to the server
+            OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+            String str = user1 + " " + user2;
+            osw.write(str, 0, str.length());
+            osw.flush();
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        } finally {
+            try {
+                socket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-    }
 
+    }
 }

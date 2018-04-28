@@ -3,51 +3,42 @@ package com.danila.diplom.client;
 import com.danila.diplom.config.StageManager;
 import com.danila.diplom.entity.Chat;
 import com.danila.diplom.entity.User;
-import com.danila.diplom.service.UserService;
+import com.danila.diplom.repository.ChatRepository;
+import com.danila.diplom.repository.UserRepository;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.ResourceBundle;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 
 
 public class ClientChatController {
     @Autowired
-    private UserService userService;
+    UserRepository userRepository;
     @Autowired
-    private StageManager stageManager;
+    ChatRepository chatRepository;
+    User me;
+    User he;
 
-    private User me;
-    private BufferedReader reader;
-    private PrintWriter writer;
-    private NetConnection connection;
-
-//    {
-//           //this.connection = new NetConnection();
-//    }
-
+    @FXML
+    private Button select;
     @FXML
     private Button sendButton;
     @FXML
-    private Button newChatButton;
+    private Button newChat;
     @FXML
-    private ListView<User> chatsList;
+    private ListView<Chat> chatsList;
     @FXML
     private TextArea messages;
     @FXML
     private TextField textField;
-
-    @FXML
-    public void setNewChatButtonClicked() {
-    }
 
     @FXML
     public void sendButtonClicked() {
@@ -55,8 +46,28 @@ public class ClientChatController {
         textField.clear();
     }
 
-    public void initChat(User user) {
-        Chat chat = new Chat(me, user);
+
+    public void initManager(StageManager manager, String login, boolean isMe) throws IOException {
+        if (isMe) me = userRepository.findById(login).get();
+        if (!isMe) he = userRepository.findById(login).get();
+        if (me.getChats() != null) chatsList.setItems(FXCollections.observableArrayList(me.getChats()));
+
+        newChat.setOnAction(event -> manager.showNewChatScreen());
+        select.setOnAction(event -> {
+            Chat chat = chatsList.getSelectionModel().getSelectedItem();
+            if (chat != null) {
+                he = chat.getUser2();
+                messages.setDisable(false);
+                textField.setDisable(false);
+                sendButton.setDisable(false);
+                messages.clear();
+                messages.appendText(chat.getMessages());
+
+                new NetConnection(me, he).init();
+
+            }
+        });
+
     }
 
 

@@ -19,9 +19,10 @@
         <RowConstraints />
         <RowConstraints />
     </rowConstraints>
-    <TextArea fx:id="messages" editable="false" prefHeight="309.0" prefWidth="468.0" BorderPane.alignment="CENTER" GridPane.columnIndex="1" />
-    <TextField fx:id="textField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-    <Button fx:id="sendButton" mnemonicParsing="false" onAction="#sendButtonClicked" text="Send" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+    <TextArea fx:id="messages" disable="true" editable="false" prefHeight="309.0" prefWidth="468.0" BorderPane.alignment="CENTER" GridPane.columnIndex="1" />
+    <TextField fx:id="textField" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Button fx:id="sendButton" disable="true" mnemonicParsing="false" onAction="#sendButtonClicked" text="Send" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
    <ListView fx:id="chatsList" prefHeight="200.0" prefWidth="200.0" />
-   <Button fx:id="newChatButton" mnemonicParsing="false" text="new chat" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+   <Button fx:id="newChat" mnemonicParsing="false" text="new chat" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+   <Button fx:id="select" mnemonicParsing="false" prefHeight="22.0" prefWidth="62.0" text="Select" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
 </GridPane>

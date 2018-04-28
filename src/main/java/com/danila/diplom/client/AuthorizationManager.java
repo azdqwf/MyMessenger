@@ -16,42 +16,9 @@ import java.util.Optional;
 public class AuthorizationManager {
 
     private Scene scene;
-
-
     public AuthorizationManager(Scene scene) {
         this.scene = scene;
     }
-
-    public void showMainView() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/clientChat.fxml")
-            );
-            Parent sc = loader.load();
-            scene.setRoot(sc);
-            scene.getWindow().sizeToScene();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-//    public void showNewChatScreen() {
-//        try {
-//            FXMLLoader loader = new FXMLLoader(
-//                    getClass().getResource("/newChat.fxml")
-//            );
-//            scene.setRoot(loader.load());
-//            AuthorizationController controller =
-//                    loader.getController();
-//            controller.initManager(this);
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-
-
 
     public static boolean isValid(UserRepository userRepository, String login, String password) {
         Optional<User> temp = userRepository.findById(login);

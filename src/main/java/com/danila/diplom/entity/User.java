@@ -20,7 +20,7 @@ public class User {
     @DBRef
     private List<Chat> chats;
 
-    private User() { //for Jpa
+    public User() { //for Jpa
     }
 
     public User(String login, String password, String email) {
