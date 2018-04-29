@@ -2,16 +2,12 @@ package com.danila.diplom;
 
 
 import com.danila.diplom.config.StageManager;
-import com.danila.diplom.repository.UserRepository;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@EnableMongoRepositories
 @SpringBootApplication
 public class Main extends Application {
 
