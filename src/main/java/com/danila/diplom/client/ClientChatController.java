@@ -17,10 +17,7 @@ import java.io.IOException;
 
 
 public class ClientChatController {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ChatRepository chatRepository;
+
     User me;
     User he;
 
@@ -45,15 +42,15 @@ public class ClientChatController {
 
 
     public void initManager(StageManager manager, String login, boolean isMe) throws IOException {
-        if (isMe) me = userRepository.findById(login).get();
-        if (!isMe) he = userRepository.findById(login).get();
-        if (me.getChats() != null) chatsList.setItems(FXCollections.observableArrayList(me.getChats()));
+//        if (isMe) me = userRepository.findById(login).get();
+//        if (!isMe) he = userRepository.findById(login).get();
+  //      if (me.getChats() != null) chatsList.setItems(FXCollections.observableArrayList(me.getChats()));
 
         newChat.setOnAction(event -> manager.showNewChatScreen());
         select.setOnAction(event -> {
             Chat chat = chatsList.getSelectionModel().getSelectedItem();
             if (chat != null) {
-                he = chat.getUser2();
+                //he = chat.getUser2();
                 messages.setDisable(false);
                 textField.setDisable(false);
                 sendButton.setDisable(false);

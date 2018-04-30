@@ -31,16 +31,6 @@ public class StageManager {
     }
 
 
-    public void switchScene(String path, String title) {
-
-        Parent viewRootNodeHierarchy = null;
-        try {
-            viewRootNodeHierarchy = FXMLLoader.load(getClass().getResource(path));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        show(viewRootNodeHierarchy, title);
-    }
 
     public void showLoginScreen() {
 
@@ -50,10 +40,6 @@ public class StageManager {
             );
             Parent root = loader.load();
             AuthorizationController controller = loader.getController();
-
-            (Main.springContext).getAutowireCapableBeanFactory().autowireBean(controller);
-
-            ((GenericApplicationContext) Main.springContext).registerBean(AuthorizationController.class, () -> controller);
 
             controller.initManager(this);
             show(root, "Auth");
@@ -69,8 +55,6 @@ public class StageManager {
             );
             Parent root = loader.load();
             NewChatController controller = loader.getController();
-            (Main.springContext).getAutowireCapableBeanFactory().autowireBean(controller);
-            ((GenericApplicationContext) Main.springContext).registerBean(NewChatController.class, () -> controller);
             controller.initManager(this);
             show(root, "Auth");
         } catch (IOException ex) {
@@ -86,10 +70,6 @@ public void showRegistrationScreen(){
         );
         Parent root = loader.load();
         RegistrationController controller = loader.getController();
-
-        (Main.springContext).getAutowireCapableBeanFactory().autowireBean(controller);
-
-        ((GenericApplicationContext) Main.springContext).registerBean(RegistrationController.class, () -> controller);
         controller.initManager(this);
         show(root, "Registration");
     } catch (IOException ex) {
@@ -104,12 +84,8 @@ public void showRegistrationScreen(){
             );
             Parent root = loader.load();
             ClientChatController controller = loader.getController();
-
-            (Main.springContext).getAutowireCapableBeanFactory().autowireBean(controller);
-
-            ((GenericApplicationContext) Main.springContext).registerBean(ClientChatController.class, () -> controller);
             controller.initManager(this, login, isMe);
-            show(root, "Auth");
+            show(root, "Authentication");
         } catch (IOException ex) {
             ex.printStackTrace();
         }

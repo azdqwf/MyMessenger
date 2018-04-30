@@ -1,10 +1,12 @@
 package com.danila.diplom.entity;
 
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.List;
 
 
