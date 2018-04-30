@@ -4,10 +4,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 
 @Document(collection = "users")
+@XmlRootElement
 public class User {
 
    @Id

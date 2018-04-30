@@ -35,7 +35,7 @@ public class AuthorizationController {
                manager.showRegistrationScreen();
         });
         okButton.setOnAction((e) -> {
-            if (AuthorizationManager.isValid(userRepository, nameField.getText(), passwordField.getText())) {
+            if (AuthorizationManager.isValid(nameField.getText(), passwordField.getText())) {
                 manager.showChatScreen(nameField.getText(), true);
             } else {
                 System.out.println("ok");

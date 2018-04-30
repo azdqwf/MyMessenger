@@ -60,7 +60,7 @@ public class ClientChatController {
                 messages.clear();
                 messages.appendText(chat.getMessages());
 
-                new NetConnection(me, he).init();
+                new NetConnection(me, he);
 
             }
         });

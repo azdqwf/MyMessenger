@@ -3,6 +3,7 @@ package com.danila.diplom.server;
 import com.danila.diplom.entity.Chat;
 import com.danila.diplom.repository.ChatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.xml.ws.Service;
 import java.io.*;
@@ -11,70 +12,52 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
 public class MessengerServer {
-    private static Socket socket;
+    static class ClientThread implements Runnable {
+        Socket socket;
+
+        public ClientThread(Socket socket) {
+            this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+
+            InputStream is = null;
+            try {
+                is = socket.getInputStream();
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                while (true) {
+                    String msg = br.readLine();
+                    System.out.println("Message received from client is " + msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
     @Autowired
     ChatRepository chatRepository;
 
 
-    public static void main(String[] args)
-    {
-        try
-        {
-            ServerSocket serverSocket = new ServerSocket( 25000);
-            System.out.println("Server Started and listening to the port 5000");
-            while(true)
-            {
+    public static void main(String[] args) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(25000);
+            System.out.println("Server Started and listening to the port 25000");
+            while (true) {
+                Socket socket;
                 socket = serverSocket.accept();
-                InputStream is = socket.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
-                String number = br.readLine();
-                System.out.println("Message received from client is "+number);
+                new Thread(new ClientThread(socket)).start();
+
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
-                socket.close();
-            }
-            catch(Exception e){}
+
         }
     }
 }
 
-//    private static class Listener implements Runnable {
-//
-//        BufferedReader reader;
-//
-//        public Listener(Socket socket) {
-//            InputStreamReader inputStreamReader;
-//            try {
-//                inputStreamReader = new InputStreamReader(socket.getInputStream());
-//                reader = new BufferedReader(inputStreamReader);
-//                System.out.println(reader.readLine());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//
-//        @Override
-//        public void run() {
-//            String message;
-//            try {
-//                while ((message = reader.readLine()) != null) {
-//                    System.out.println(message);
-//                  //  sendHim(message);
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//    }

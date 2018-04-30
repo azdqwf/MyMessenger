@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 
-public class NewChatController extends Controller {
+public class NewChatController {
     @Autowired
     UserRepository userRepository;
 
