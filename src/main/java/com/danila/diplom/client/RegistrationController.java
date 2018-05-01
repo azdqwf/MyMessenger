@@ -1,6 +1,8 @@
 package com.danila.diplom.client;
 
+import com.danila.diplom.Main;
 import com.danila.diplom.config.StageManager;
+import com.danila.diplom.entity.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,21 +25,24 @@ public class RegistrationController {
 
 
     public void initManager(StageManager manager) throws IOException {
-//        ok.setOnAction((e) -> {
-//            if(login.getText().length() >= 4)
-//
-//            { if
-//                    (!userRepository.findById(login.getText()).isPresent()) {
-//                userRepository.save(new User(login.getText(), pass.getText(), email.getText()));
-//                manager.showLoginScreen();
-//            } else
-//                error.setText("This login already exists");
-//                login.setStyle("-fx-border-color:red;");
-//            }
-//            else
-//                error.setText("Login must have at least 4 letters");
-//            login.setStyle("-fx-border-color:red;");
-//
-//        });
+        ok.setOnAction((e) -> {
+            if (login.getText().length() >= 4)
+
+            {
+                User me = new User();
+                me.setLogin(login.getText());
+                me.setPassword(pass.getText());
+                me.setEmail(email.getText());
+
+                if (Main.connection.register(me)) {
+                    manager.showLoginScreen();
+                } else
+                    error.setText("This login already exists");
+                login.setStyle("-fx-border-color:red;");
+            } else
+                error.setText("Login must have at least 4 letters");
+            login.setStyle("-fx-border-color:red;");
+
+        });
     }
 }

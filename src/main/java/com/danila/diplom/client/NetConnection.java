@@ -1,5 +1,6 @@
 package com.danila.diplom.client;
 
+import com.danila.diplom.entity.Chat;
 import com.danila.diplom.entity.User;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 
@@ -27,10 +28,6 @@ public class NetConnection {
     StreamSource json;
 
 
-    private void newChat() {
-
-    }
-
     public NetConnection() {
         System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
         try {
@@ -51,12 +48,64 @@ public class NetConnection {
 
     }
 
-    public User authenticate(User u) {
+    public boolean okOrFail(String query) throws IOException {
 
+        outputStreamWriter.write(query, 0, query.length());
+        outputStreamWriter.write("\r\n");
+        outputStreamWriter.flush();
+
+        String msg = reader.readLine();
+        switch (msg) {
+            case "ok":
+                return true;
+            case "fail":
+                return false;
+        }
+        return false;
+    }
+
+    public boolean sendMessage(User me, User he, String chatId, String msg) {
+        String query = "msg~" + me + "~" + he + "~" + chatId + "~" + me.getLogin() + ":" + msg;
         try {
+            return okOrFail(query);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
 
+    }
+
+
+    public boolean newChat(String me, String he) {
+        String query = "nc~" + me + "~" + he;
+        try {
+            return okOrFail(query);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        return false;
+
+    }
+
+    public boolean register(User u) {
+        stringWriter = new StringWriter();
+        try {
             userMarshaller.marshal(u, stringWriter);
-            String query = "auth" + stringWriter.toString();
+            String query = "reg~" + stringWriter.toString();
+            return okOrFail(query);
+
+        } catch (JAXBException | IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public User authenticate(User u) {
+        stringWriter = new StringWriter();
+        try {
+            userMarshaller.marshal(u, stringWriter);
+            String query = "auth~" + stringWriter.toString();
             outputStreamWriter.write(query, 0, query.length());
             outputStreamWriter.write("\r\n");
             outputStreamWriter.flush();
@@ -64,6 +113,7 @@ public class NetConnection {
             String[] msg = reader.readLine().split(" ");
             switch (msg[0]) {
                 case "ok":
+                    System.out.println(msg[1]);
                     json = new StreamSource(new StringReader(msg[1]));
                     return userUnmarshaller.unmarshal(json, User.class).getValue();
                 case "fail":

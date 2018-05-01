@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -13,11 +14,11 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Chat {
     @Id
     private String id;
-
+    @XmlElement
     private String user1;
-
+    @XmlElement
     private String user2;
-
+    @XmlElement
     private String messages;
 
     public Chat(String user1, String user2) {
@@ -53,7 +54,7 @@ public class Chat {
     }
 
     public String getMessages() {
-        return messages;
+        return messages != null ? messages : "";
     }
 
     public void setMessages(String messages) {
@@ -62,6 +63,6 @@ public class Chat {
 
     @Override
     public String toString() {
-        return user2;
+        return user1 + ", " + user2;
     }
 }

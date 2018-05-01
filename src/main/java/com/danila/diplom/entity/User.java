@@ -5,8 +5,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -14,13 +16,12 @@ import java.util.List;
 @XmlRootElement
 public class User {
 
-   @Id
+    @Id
     private String login;
 
     private String password;
 
     private String email;
-
     @DBRef
     private List<Chat> chats;
 
@@ -58,7 +59,10 @@ public class User {
     }
 
     public List<Chat> getChats() {
+        if (chats != null) return chats;
+        else chats = new ArrayList<>();
         return chats;
+
     }
 
     public void setChats(List<Chat> chats) {

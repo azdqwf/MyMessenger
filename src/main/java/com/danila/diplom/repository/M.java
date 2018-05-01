@@ -47,6 +47,7 @@
 //                "asdasdasd\n" +
 //                "asdasdasdas\n");
 //        chatRepository.save(chat);
+//        System.out.println(chat.getId());
 //        vasea.setChats(Collections.singletonList(chatRepository.findById(chat.getId()).get()));
 //        userRepository.save(vasea);
 //        userRepository.save(petea);
