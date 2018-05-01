@@ -1,24 +1,22 @@
 package com.danila.diplom.entity;
 
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
+
 
 @Document(collection = "chats")
-public class Chat {
+public class Chat implements Serializable {
+    private static final long serialVersionUID = 4316522149090787182L;
     @Id
     private String id;
-    @XmlElement
+
     private String user1;
-    @XmlElement
+
     private String user2;
-    @XmlElement
+
     private String messages;
 
     public Chat(String user1, String user2) {

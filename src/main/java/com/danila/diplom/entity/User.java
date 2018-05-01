@@ -8,14 +8,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Document(collection = "users")
-@XmlRootElement
-public class User {
+public class User implements Serializable {
 
+    private static final long serialVersionUID = 6091422997532114805L;
     @Id
     private String login;
 

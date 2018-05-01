@@ -19,11 +19,7 @@ public class NetConnection {
     private User user1;
     private User user2;
     private Socket socket;
-    private OutputStreamWriter outputStreamWriter;
-    private JAXBContext userJaxbContext;
-    private Marshaller userMarshaller;
-    private Unmarshaller userUnmarshaller;
-    private StringWriter stringWriter;
+    private ObjectOutputStream objectOutputStream;
     private BufferedReader reader;
     StreamSource json;
 
@@ -32,15 +28,8 @@ public class NetConnection {
         System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
         try {
             socket = new Socket(InetAddress.getLocalHost(), 25000);
-            userJaxbContext = JAXBContext.newInstance(User.class);
-            userMarshaller = userJaxbContext.createMarshaller();
-            userMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-            userUnmarshaller = userJaxbContext.createUnmarshaller();
-            userUnmarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-
-            outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            stringWriter = new StringWriter();
 
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -49,10 +38,8 @@ public class NetConnection {
     }
 
     public boolean okOrFail(String query) throws IOException {
-
-        outputStreamWriter.write(query, 0, query.length());
-        outputStreamWriter.write("\r\n");
-        outputStreamWriter.flush();
+        objectOutputStream.writeChars(query);
+        objectOutputStream.flush();
 
         String msg = reader.readLine();
         switch (msg) {
@@ -102,9 +89,8 @@ public class NetConnection {
     }
 
     public User authenticate(User u) {
-        stringWriter = new StringWriter();
         try {
-            userMarshaller.marshal(u, stringWriter);
+          objectOutputStream.writeObject(u);
             String query = "auth~" + stringWriter.toString();
             outputStreamWriter.write(query, 0, query.length());
             outputStreamWriter.write("\r\n");
