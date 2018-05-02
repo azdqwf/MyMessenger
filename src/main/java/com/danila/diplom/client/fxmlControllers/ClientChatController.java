@@ -50,6 +50,7 @@ public class ClientChatController {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+
                 List<Integer> list = chatsList.getSelectionModel().getSelectedIndices();
                 Integer item = list.get(0);
                 me = Main.connection.authenticate(me);
@@ -59,7 +60,7 @@ public class ClientChatController {
                 }
                 if (!messages.isDisabled()) {
                     isEmpty = messages.getText().equals("");
-                    messages.setText(Main.connection.getChat(me, chatId).getMessages());
+                    messages.appendText(Main.connection.getChat(me, chatId).getMessages());
                 }
             }
         }, 2000, 2000);
@@ -79,7 +80,6 @@ public class ClientChatController {
                 messages.setDisable(false);
                 textField.setDisable(false);
                 sendButton.setDisable(false);
-                messages.clear();
                 messages.appendText(chat.getMessages());
                 isEmpty = messages.getText().equals("");
                 isFirst = true;
@@ -91,6 +91,7 @@ public class ClientChatController {
             if (Main.connection.sendMessage(this.me, this.he, chatId, me.getLogin() + ": " + msg)) {
                 if (isEmpty && isFirst) {
                     messages.appendText(me.getLogin() + ": " + msg + "\n");
+
                     isFirst = false;
                 } else {
                     messages.appendText("\n" + me.getLogin() + ": " + msg + "\n");
