@@ -21,6 +21,6 @@
     </Label>
     <TextField fx:id="nameField" layoutX="146.0" layoutY="44.0" />
     <PasswordField fx:id="passwordField" layoutX="146.0" layoutY="94.0" />
-    <Button fx:id="okButton" layoutX="90.0" layoutY="157.0" mnemonicParsing="false" prefWidth="67.0" text="Ok" />
+    <Button fx:id="okButton" defaultButton="true" layoutX="90.0" layoutY="157.0" mnemonicParsing="false" prefWidth="67.0" text="Ok" />
    <Button fx:id="register" layoutX="213.0" layoutY="157.0" mnemonicParsing="false" text="Register" />
 </Pane>

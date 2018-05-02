@@ -30,17 +30,17 @@ public class AuthorizationController {
 
 
     public void initManager(StageManager manager) throws IOException {
-        register.setOnAction((e) -> {
-            manager.showRegistrationScreen();
-        });
-        okButton.setOnAction((e) -> {
-            User me = isValid(nameField.getText(), passwordField.getText());
-            if (me != null) {
-                manager.showChatScreen(me, null, true);
-            } else {
-                System.out.println("fail");
+            register.setOnAction((e) -> {
+                manager.showRegistrationScreen();
+            });
+            okButton.setOnAction((e) -> {
+                User me = isValid(nameField.getText(), passwordField.getText());
+                if (me != null) {
+                    manager.showChatScreen(me, null, true);
+                } else {
+                    System.out.println("fail");
 
-            }
+                }
         });
 
     }

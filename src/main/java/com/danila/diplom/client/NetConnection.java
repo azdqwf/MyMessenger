@@ -26,7 +26,7 @@ public class NetConnection {
 
     public NetConnection() {
         try {
-            socket = new Socket("95.65.114.53", 25000);
+            socket = new Socket("192.168.0.106", 25000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
 

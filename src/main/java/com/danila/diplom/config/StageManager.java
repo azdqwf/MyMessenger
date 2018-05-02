@@ -9,6 +9,7 @@ import com.danila.diplom.entity.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class StageManager {
         }
     }
 
-   ;
+    ;
 
     public void showChatScreen(User me, User he, boolean isMe) {
         try {
@@ -78,8 +79,7 @@ public class StageManager {
                     getClass().getResource("/clientChat.fxml")
             );
             Parent root = loader.load();
-
-                ClientChatController controller = loader.getController();
+            ClientChatController controller = loader.getController();
             controller.initManager(this, me, he, isMe);
             show(root, "MyMessenger, " + me.getLogin());
         } catch (IOException ex) {
