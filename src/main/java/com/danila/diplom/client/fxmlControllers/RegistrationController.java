@@ -1,7 +1,7 @@
-package com.danila.diplom.client;
+package com.danila.diplom.client.fxmlControllers;
 
-import com.danila.diplom.Main;
-import com.danila.diplom.config.StageManager;
+import com.danila.diplom.client.Main;
+import com.danila.diplom.client.config.StageManager;
 import com.danila.diplom.entity.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

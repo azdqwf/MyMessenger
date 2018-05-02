@@ -1,15 +1,14 @@
-package com.danila.diplom.config;
+package com.danila.diplom.client.config;
 
 
-import com.danila.diplom.client.AuthorizationController;
-import com.danila.diplom.client.ClientChatController;
-import com.danila.diplom.client.NewChatController;
-import com.danila.diplom.client.RegistrationController;
+import com.danila.diplom.client.fxmlControllers.AuthorizationController;
+import com.danila.diplom.client.fxmlControllers.ClientChatController;
+import com.danila.diplom.client.fxmlControllers.NewChatController;
+import com.danila.diplom.client.fxmlControllers.RegistrationController;
 import com.danila.diplom.entity.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;

@@ -3,30 +3,23 @@ package com.danila.diplom.server;
 import com.danila.diplom.entity.Chat;
 import com.danila.diplom.entity.Query;
 import com.danila.diplom.entity.User;
-import com.danila.diplom.repository.ChatRepository;
-import com.danila.diplom.repository.UserRepository;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
+import com.danila.diplom.server.repository.ChatRepository;
+import com.danila.diplom.server.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 @SpringBootApplication
-@EnableMongoRepositories(basePackages = "com.danila.diplom.repository")
+@EnableMongoRepositories(basePackages = "com.danila.diplom.server.repository")
 public class MessengerServer implements CommandLineRunner {
 
     @Autowired
@@ -47,12 +40,8 @@ public class MessengerServer implements CommandLineRunner {
 
         @Override
         public void run() {
-
-            try {
-
-                ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
-                ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());
-
+            try (ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
+                 ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())) {
                 Optional<User> oUser1;
                 Optional<User> oUser2;
                 User user1;
@@ -62,7 +51,9 @@ public class MessengerServer implements CommandLineRunner {
                 while (true) {
                     Query msg = (Query) reader.readObject();
                     System.out.println(msg);
-
+                    if (msg == null) {
+                        break;
+                    }
                     switch (msg.getType()) {
                         case "auth":
                             user1 = msg.getUser1();
@@ -144,7 +135,7 @@ public class MessengerServer implements CommandLineRunner {
                                 writer.writeObject(new Query().setType("fail"));
                                 writer.flush();
                             }
-
+                            break;
                     }
                 }
             } catch (IOException | ClassNotFoundException e) {
@@ -164,13 +155,11 @@ public class MessengerServer implements CommandLineRunner {
             ServerSocket serverSocket = new ServerSocket(25000);
             System.out.println("Server Started and listening to the port 25000");
             while (true) {
-                Socket socket;
-                socket = serverSocket.accept();
+                Socket socket = serverSocket.accept();
                 new Thread(new ClientThread(socket)).start();
             }
         } catch (Exception e) {
             e.printStackTrace();
-
         }
     }
 }

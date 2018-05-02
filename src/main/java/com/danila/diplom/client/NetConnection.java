@@ -12,21 +12,25 @@ import java.net.Socket;
 
 public class NetConnection {
 
-    private static NetConnection instance;
+//    private static NetConnection instance;
+//
+//    public static NetConnection getInstance() {
+//        if (instance != null) return instance;
+//        else {
+//            instance = new NetConnection();
+//        }
+//        return new NetConnection();
+//    }
 
-    public static NetConnection getInstance() {
-        if (instance != null) return instance;
-        return new NetConnection();
-    }
+    public Socket socket;
 
-    private Socket socket;
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
 
 
     public NetConnection() {
         try {
-            socket = new Socket("192.168.0.106", 25000);
+            socket = new Socket(InetAddress.getLocalHost(), 25000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
 
@@ -62,7 +66,7 @@ public class NetConnection {
     }
 
 
-    Chat newChat(User me, String he) {
+    public Chat newChat(User me, String he) {
 
         try {
             Query query = new Query().setType("nc").setUser1(me).setParam1(he);
@@ -136,7 +140,18 @@ public class NetConnection {
             e.printStackTrace();
         }
         return null;
-
     }
 
+    public void end() {
+        try {
+            objectOutputStream.writeObject(null);
+            objectOutputStream.flush();
+            socket.close();
+            objectInputStream.close();
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

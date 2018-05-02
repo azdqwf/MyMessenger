@@ -1,17 +1,14 @@
-package com.danila.diplom.client;
+package com.danila.diplom.client.fxmlControllers;
 
-import com.danila.diplom.Main;
-import com.danila.diplom.config.StageManager;
+import com.danila.diplom.client.Main;
+import com.danila.diplom.client.config.StageManager;
 import com.danila.diplom.entity.Chat;
 import com.danila.diplom.entity.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class NewChatController {
 

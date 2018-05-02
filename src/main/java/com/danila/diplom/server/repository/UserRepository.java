@@ -1,4 +1,4 @@
-package com.danila.diplom.repository;
+package com.danila.diplom.server.repository;
 
 import com.danila.diplom.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;

@@ -1,20 +1,16 @@
-package com.danila.diplom.client;
+package com.danila.diplom.client.fxmlControllers;
 
-import com.danila.diplom.Main;
-import com.danila.diplom.config.StageManager;
+import com.danila.diplom.client.Main;
+import com.danila.diplom.client.config.StageManager;
 import com.danila.diplom.entity.Chat;
 import com.danila.diplom.entity.User;
-import com.danila.diplom.repository.ChatRepository;
-import com.danila.diplom.repository.UserRepository;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import org.springframework.beans.factory.annotation.Autowired;
+import javafx.scene.control.*;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,11 +50,12 @@ public class ClientChatController {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
+                List<Integer> list = chatsList.getSelectionModel().getSelectedIndices();
+                Integer item = list.get(0);
                 me = Main.connection.authenticate(me);
                 if (me.getChats() != null) {
                     chatsList.setItems(FXCollections.observableArrayList(me.getChats()));
-                    chatsList.getSelectionModel().selectFirst();
+                    chatsList.getSelectionModel().selectIndices(item);
                 }
                 if (!messages.isDisabled()) {
                     isEmpty = messages.getText().equals("");
@@ -92,11 +89,11 @@ public class ClientChatController {
         sendButton.setOnAction(event -> {
             String msg = textField.getText();
             if (Main.connection.sendMessage(this.me, this.he, chatId, me.getLogin() + ": " + msg)) {
-                if (!isEmpty && isFirst) {
-                    messages.appendText("\n" + me.getLogin() + ": " + msg + "\n");
+                if (isEmpty && isFirst) {
+                    messages.appendText(me.getLogin() + ": " + msg + "\n");
                     isFirst = false;
                 } else {
-                    messages.appendText(me.getLogin() + ": " + msg + "\n");
+                    messages.appendText("\n" + me.getLogin() + ": " + msg + "\n");
                 }
 
                 textField.clear();
