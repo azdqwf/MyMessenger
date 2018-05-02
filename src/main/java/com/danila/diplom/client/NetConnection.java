@@ -1,27 +1,28 @@
 package com.danila.diplom.client;
 
 import com.danila.diplom.entity.Chat;
+import com.danila.diplom.entity.Query;
 import com.danila.diplom.entity.User;
-import org.eclipse.persistence.jaxb.MarshallerProperties;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 
 public class NetConnection {
 
-    private User user1;
-    private User user2;
+    private static NetConnection instance;
+
+    public static NetConnection getInstance() {
+        if (instance != null) return instance;
+        return new NetConnection();
+    }
+
     private Socket socket;
     private ObjectOutputStream objectOutputStream;
-    private BufferedReader reader;
-    StreamSource json;
+    private ObjectInputStream objectInputStream;
 
 
     public NetConnection() {
@@ -29,7 +30,7 @@ public class NetConnection {
         try {
             socket = new Socket(InetAddress.getLocalHost(), 25000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
 
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -37,12 +38,12 @@ public class NetConnection {
 
     }
 
-    public boolean okOrFail(String query) throws IOException {
-        objectOutputStream.writeChars(query);
+    public boolean okOrFail(Query query) throws IOException, ClassNotFoundException {
+        objectOutputStream.writeObject(query);
         objectOutputStream.flush();
 
-        String msg = reader.readLine();
-        switch (msg) {
+        Query msg = (Query) objectInputStream.readObject();
+        switch (msg.getType()) {
             case "ok":
                 return true;
             case "fail":
@@ -52,10 +53,10 @@ public class NetConnection {
     }
 
     public boolean sendMessage(User me, User he, String chatId, String msg) {
-        String query = "msg~" + me + "~" + he + "~" + chatId + "~" + me.getLogin() + ":" + msg;
+        Query query = new Query().setType("msg").setUser1(me).setUser2(he).setParam1(chatId).setParam2(msg);
         try {
-            return okOrFail(query);
-        } catch (IOException e) {
+            okOrFail(query);
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return false;
@@ -63,58 +64,79 @@ public class NetConnection {
     }
 
 
-    public boolean newChat(String me, String he) {
-        String query = "nc~" + me + "~" + he;
+    public boolean newChat(User me, String he) {
+
         try {
-            return okOrFail(query);
-        } catch (IOException e) {
-            e.printStackTrace();
+            Query query = new Query().setType("nc").setUser1(me).setParam1(he);
+            objectOutputStream.writeObject(query);
+            objectOutputStream.flush();
 
-        }
-        return false;
-
-    }
-
-    public boolean register(User u) {
-        stringWriter = new StringWriter();
-        try {
-            userMarshaller.marshal(u, stringWriter);
-            String query = "reg~" + stringWriter.toString();
-            return okOrFail(query);
-
-        } catch (JAXBException | IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public User authenticate(User u) {
-        try {
-          objectOutputStream.writeObject(u);
-            String query = "auth~" + stringWriter.toString();
-            outputStreamWriter.write(query, 0, query.length());
-            outputStreamWriter.write("\r\n");
-            outputStreamWriter.flush();
-
-            String[] msg = reader.readLine().split(" ");
-            switch (msg[0]) {
+            Query msg = (Query) objectInputStream.readObject();
+            switch (msg.getType()) {
                 case "ok":
-                    System.out.println(msg[1]);
-                    json = new StreamSource(new StringReader(msg[1]));
-                    return userUnmarshaller.unmarshal(json, User.class).getValue();
+                    return true;
+                case "fail":
+                    return false;
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+
+    }
+
+    public boolean register(User me) {
+        Query query = new Query().setType("reg").setUser1(me);
+        try {
+
+            return okOrFail(query);
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Chat getChat(User me, String he) {
+        Query query = new Query().setType("gc").setUser1(me).setParam1(he);
+        try {
+            objectOutputStream.writeObject(query);
+            objectOutputStream.flush();
+            Query response = (Query) objectInputStream.readObject();
+
+            switch (response.getType()) {
+                case "ok":
+                    return response.getChat();
                 case "fail":
                     return null;
             }
             return null;
-        } catch (IOException | JAXBException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
 
     }
 
-    public NetConnection(User user1, User user2) {
-        this.user1 = user1;
-        this.user2 = user2;
+    public User authenticate(User me) {
+        Query query = new Query().setType("auth").setUser1(me);
+        try {
+            objectOutputStream.writeObject(query);
+            objectOutputStream.flush();
+            Query response = (Query) objectInputStream.readObject();
+            switch (response.getType()) {
+                case "ok":
+                    return response.getUser1();
+                case "fail":
+                    return null;
+            }
+            return null;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+
     }
+
 }

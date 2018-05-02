@@ -39,7 +39,6 @@ public class ClientChatController {
     boolean isEmpty;
 
     public void initManager(StageManager manager, User me, User he, boolean isMe) throws IOException {
-
         if (isMe) this.me = me;
         if (!isMe) {
             this.me = me;
