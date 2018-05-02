@@ -57,6 +57,8 @@ public class MessengerServer implements CommandLineRunner {
                 Optional<User> oUser2;
                 User user1;
                 User user2;
+                Optional<Chat> oChat;
+                Chat chat;
                 while (true) {
                     Query msg = (Query) reader.readObject();
                     System.out.println(msg);
@@ -81,14 +83,14 @@ public class MessengerServer implements CommandLineRunner {
                             oUser1 = userRepository.findById(msg.getUser1().getLogin());
                             oUser2 = userRepository.findById(msg.getParam1());
                             if (oUser1.isPresent() && oUser2.isPresent()) {
-                                Chat chat = new Chat(oUser1.get().getLogin(), oUser2.get().getLogin());
+                                chat = new Chat(oUser1.get().getLogin(), oUser2.get().getLogin());
                                 chatRepository.save(chat);
                                 user1 = oUser1.get();
                                 user2 = oUser2.get();
                                 user1.getChats().add(chat);
                                 user2.getChats().add(chat);
                                 userRepository.saveAll(Arrays.asList(user1, user2));
-                                writer.writeObject(new Query().setType("ok").setParam1(chat.getId()));
+                                writer.writeObject(new Query().setType("ok").setChat(chat));
                                 writer.flush();
 
                             } else {
@@ -112,9 +114,9 @@ public class MessengerServer implements CommandLineRunner {
                             String chatId = msg.getParam1();
                             String message = msg.getParam2();
 
-                            Optional<Chat> oChat = chatRepository.findById(chatId);
+                            oChat = chatRepository.findById(chatId);
                             if (oChat.isPresent()) {
-                                Chat chat = oChat.get();
+                                chat = oChat.get();
                                 String oldMessages = chat.getMessages();
                                 if (oldMessages.length() != 0)
                                     chat.setMessages(chat.getMessages() + "\n" + message);
@@ -127,9 +129,21 @@ public class MessengerServer implements CommandLineRunner {
                                 writer.flush();
                             }
                             break;
-                        case"gc":
+                        case "gc":
                             user1 = msg.getUser1();
-                            String user2login = msg.getParam1();
+                            oUser1 = userRepository.findById(user1.getLogin());
+                            if (oUser1.isPresent() && Objects.equals(user1.getPassword(), oUser1.get().getPassword())) {
+                                oChat = chatRepository.findById(msg.getParam1());
+                                if (oChat.isPresent()) {
+                                    chat = oChat.get();
+                                    writer.writeObject(new Query().setType("ok").setChat(chat));
+                                    writer.flush();
+                                }
+
+                            } else {
+                                writer.writeObject(new Query().setType("fail"));
+                                writer.flush();
+                            }
 
                     }
                 }

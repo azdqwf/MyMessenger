@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class NetConnection {
 
@@ -26,9 +25,8 @@ public class NetConnection {
 
 
     public NetConnection() {
-        System.setProperty("javax.xml.bind.context.factory", "org.eclipse.persistence.jaxb.JAXBContextFactory");
         try {
-            socket = new Socket(InetAddress.getLocalHost(), 25000);
+            socket = new Socket("95.65.114.53", 25000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
 
@@ -55,7 +53,7 @@ public class NetConnection {
     public boolean sendMessage(User me, User he, String chatId, String msg) {
         Query query = new Query().setType("msg").setUser1(me).setUser2(he).setParam1(chatId).setParam2(msg);
         try {
-            okOrFail(query);
+            return okOrFail(query);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -64,7 +62,7 @@ public class NetConnection {
     }
 
 
-    public boolean newChat(User me, String he) {
+    Chat newChat(User me, String he) {
 
         try {
             Query query = new Query().setType("nc").setUser1(me).setParam1(he);
@@ -74,15 +72,15 @@ public class NetConnection {
             Query msg = (Query) objectInputStream.readObject();
             switch (msg.getType()) {
                 case "ok":
-                    return true;
+                    return msg.getChat();
                 case "fail":
-                    return false;
+                    return null;
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return null;
 
     }
 
@@ -98,8 +96,8 @@ public class NetConnection {
         return false;
     }
 
-    public Chat getChat(User me, String he) {
-        Query query = new Query().setType("gc").setUser1(me).setParam1(he);
+    public Chat getChat(User me, String chatId) {
+        Query query = new Query().setType("gc").setUser1(me).setParam1(chatId);
         try {
             objectOutputStream.writeObject(query);
             objectOutputStream.flush();
@@ -110,6 +108,8 @@ public class NetConnection {
                     return response.getChat();
                 case "fail":
                     return null;
+                default:
+                    break;
             }
             return null;
         } catch (IOException | ClassNotFoundException e) {

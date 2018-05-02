@@ -49,7 +49,7 @@ public class StageManager {
             Parent root = loader.load();
             NewChatController controller = loader.getController();
             controller.initManager(this, me);
-            show(root, "Auth");
+            show(root, "NewChat");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -81,7 +81,7 @@ public class StageManager {
 
                 ClientChatController controller = loader.getController();
             controller.initManager(this, me, he, isMe);
-            show(root, "MyMessenger");
+            show(root, "MyMessenger, " + me.getLogin());
         } catch (IOException ex) {
             ex.printStackTrace();
         }

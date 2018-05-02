@@ -15,13 +15,15 @@ import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class ClientChatController {
 
     User me;
     User he;
-
+    public static Timer timer;
     @FXML
     private Button select;
     @FXML
@@ -37,22 +39,38 @@ public class ClientChatController {
     private String chatId;
     boolean isFirst;
     boolean isEmpty;
+    Chat chat;
 
-    public void initManager(StageManager manager, User me, User he, boolean isMe) throws IOException {
-        if (isMe) this.me = me;
+    public void initManager(StageManager manager, User me1, User he, boolean isMe) throws IOException {
+
+        if (isMe) this.me = me1;
         if (!isMe) {
-            this.me = me;
+            this.me = me1;
             this.he = he;
         }
-
         if (me.getChats() != null) chatsList.setItems(FXCollections.observableArrayList(me.getChats()));
 
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                me = Main.connection.authenticate(me);
+                if (me.getChats() != null) {
+                    chatsList.setItems(FXCollections.observableArrayList(me.getChats()));
+                    chatsList.getSelectionModel().selectFirst();
+                }
+                if (!messages.isDisabled()) {
+                    isEmpty = messages.getText().equals("");
+                    messages.setText(Main.connection.getChat(me, chatId).getMessages());
+                }
+            }
+        }, 2000, 2000);
         newChat.setOnAction(event -> manager.showNewChatScreen(me));
         select.setOnAction(event -> {
-            Chat chat = chatsList.getSelectionModel().getSelectedItem();
-
+            chatId = chatsList.getSelectionModel().getSelectedItem().getId();
+            chat = Main.connection.getChat(me, chatId);
             if (chat != null) {
-                chatId = chat.getId();
                 String login = chat.getUser1();
                 this.he = new User();
                 if (me.getLogin().equals(login)) {
@@ -73,7 +91,7 @@ public class ClientChatController {
         });
         sendButton.setOnAction(event -> {
             String msg = textField.getText();
-            if (Main.connection.sendMessage(this.me, this.he, chatId, msg)) {
+            if (Main.connection.sendMessage(this.me, this.he, chatId, me.getLogin() + ": " + msg)) {
                 if (!isEmpty && isFirst) {
                     messages.appendText("\n" + me.getLogin() + ": " + msg + "\n");
                     isFirst = false;
@@ -83,7 +101,7 @@ public class ClientChatController {
 
                 textField.clear();
             } else
-                messages.appendText("failed to send");
+                messages.appendText("\nfailed to send");
             textField.clear();
         });
     }

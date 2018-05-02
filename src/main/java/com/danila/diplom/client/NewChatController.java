@@ -24,10 +24,12 @@ public class NewChatController {
 
     public void initManager(StageManager manager, User me) throws IOException {
         okButton.setOnAction((e) -> {
-            if (Main.connection.newChat(me, textField.getText())) {
+            System.out.println(textField.getText());
+            Chat chat = Main.connection.newChat(me, textField.getText());
+            if (chat != null) {
                 User he = new User();
                 he.setLogin(textField.getText());
-                me.getChats().add(Main.connection.getChat(me, he.getLogin()));
+                me.getChats().add(chat);
                 manager.showChatScreen(me, he, true);
             } else System.out.println("fail");
         });

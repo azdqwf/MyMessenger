@@ -1,6 +1,7 @@
 package com.danila.diplom;
 
 
+import com.danila.diplom.client.ClientChatController;
 import com.danila.diplom.client.NetConnection;
 import com.danila.diplom.config.StageManager;
 import javafx.application.Application;
@@ -22,6 +23,10 @@ public static NetConnection connection = new NetConnection();
         stageManager.showLoginScreen();
     }
 
+    @Override
+    public void stop() throws Exception {
+        ClientChatController.timer.cancel();
+    }
 
     public static void main(String[] args) {
         launch(args);
