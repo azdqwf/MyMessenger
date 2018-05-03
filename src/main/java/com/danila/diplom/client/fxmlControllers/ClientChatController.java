@@ -60,7 +60,8 @@ public class ClientChatController {
                 }
                 if (!messages.isDisabled()) {
                     isEmpty = messages.getText().equals("");
-                    messages.appendText(Main.connection.getChat(me, chatId).getMessages());
+                    messages.setText(Main.connection.getChat(me, chatId).getMessages());
+                    messages.setScrollTop(1000);
                 }
             }
         }, 2000, 2000);
