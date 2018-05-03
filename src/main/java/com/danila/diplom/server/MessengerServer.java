@@ -51,9 +51,9 @@ public class MessengerServer implements CommandLineRunner {
                 while (true) {
                     Query msg = (Query) reader.readObject();
                     System.out.println(msg);
-                    if (msg == null) {
-                        break;
-                    }
+//                    if (msg == null) {
+//                        break;
+//                    }
                     switch (msg.getType()) {
                         case "auth":
                             user1 = msg.getUser1();
