@@ -1,6 +1,7 @@
 package com.danila.diplom.client.fxmlControllers;
 
 import com.danila.diplom.client.Main;
+import com.danila.diplom.client.NetConnection;
 import com.danila.diplom.client.config.StageManager;
 import com.danila.diplom.entity.User;
 import javafx.fxml.FXML;
@@ -34,7 +35,7 @@ public class RegistrationController {
                 me.setPassword(pass.getText());
                 me.setEmail(email.getText());
 
-                if (Main.connection.register(me)) {
+                if (NetConnection.getInstance().register(me)) {
                     manager.showLoginScreen();
                 } else
                     error.setText("This login already exists");

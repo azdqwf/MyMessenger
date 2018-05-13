@@ -9,31 +9,30 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-
 public class NetConnection {
 
-//    private static NetConnection instance;
-//
-//    public static NetConnection getInstance() {
-//        if (instance != null) return instance;
-//        else {
-//            instance = new NetConnection();
-//        }
-//        return new NetConnection();
-//    }
+    private static NetConnection instance;
+
+    public static NetConnection getInstance() {
+        if (instance == null) instance = new NetConnection();
+        return instance;
+    }
 
     public Socket socket;
+    public Socket updateSocket;
 
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
+    ObjectInputStream updateObjectStream;
 
 
     public NetConnection() {
+
         try {
             socket = new Socket(InetAddress.getLocalHost(), 25000);
+            updateSocket = new Socket(InetAddress.getLocalHost(), 5000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
-
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -54,8 +53,8 @@ public class NetConnection {
         return false;
     }
 
-    public boolean sendMessage(User me, User he, String chatId, String msg) {
-        Query query = new Query().setType("msg").setUser1(me).setUser2(he).setParam1(chatId).setParam2(msg);
+    public boolean sendMessage(User me, String chatId, String msg) {
+        Query query = new Query().setType("msg").setUser1(me).setParam1(chatId).setParam2(msg);
         try {
             return okOrFail(query);
         } catch (IOException | ClassNotFoundException e) {
@@ -136,6 +135,7 @@ public class NetConnection {
             Query response = (Query) objectInputStream.readObject();
             switch (response.getType()) {
                 case "ok":
+                    new Thread(new UpdateListener()).start();
                     return response.getUser1();
                 case "fail":
                     return null;
@@ -158,5 +158,33 @@ public class NetConnection {
             e.printStackTrace();
         }
 
+    }
+
+    class UpdateListener implements Runnable {
+
+        @Override
+        public void run() {
+            System.out.println("th started");
+            try {
+                updateObjectStream = new ObjectInputStream(updateSocket.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (!updateSocket.isClosed()) {
+                try {
+                    Query query = (Query) updateObjectStream.readObject();
+                    System.out.println(query);
+                } catch (IOException | ClassNotFoundException e) {
+                    try {
+                        updateSocket.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    e.printStackTrace();
+                    System.out.println("fail th");
+                }
+            }
+
+        }
     }
 }

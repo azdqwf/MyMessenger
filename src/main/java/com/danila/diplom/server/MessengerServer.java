@@ -11,12 +11,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @SpringBootApplication
 @EnableMongoRepositories(basePackages = "com.danila.diplom.server.repository")
@@ -27,21 +27,24 @@ public class MessengerServer implements CommandLineRunner {
     @Autowired
     UserRepository userRepository;
 
+    Map<String, ObjectOutputStream> usersMap = new HashMap<>();
+
+
     class ClientThread implements Runnable {
-
         Socket socket;
+        Socket updateSocket;
 
 
-        public ClientThread(Socket socket) {
-
+        ClientThread(Socket socket, Socket updateSocket) throws IOException {
             this.socket = socket;
-
+            this.updateSocket = updateSocket;
         }
 
         @Override
         public void run() {
             try (ObjectInputStream reader = new ObjectInputStream(socket.getInputStream());
-                 ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream())) {
+                 ObjectOutputStream writer = new ObjectOutputStream(socket.getOutputStream());
+                 ObjectOutputStream updateOutputSteam = new ObjectOutputStream(updateSocket.getOutputStream())) {
                 Optional<User> oUser1;
                 Optional<User> oUser2;
                 User user1;
@@ -51,6 +54,8 @@ public class MessengerServer implements CommandLineRunner {
                 while (true) {
                     Query msg = (Query) reader.readObject();
                     System.out.println(msg);
+                    updateOutputSteam.writeObject(msg);
+                    updateOutputSteam.flush();
 //                    if (msg == null) {
 //                        break;
 //                    }
@@ -59,8 +64,8 @@ public class MessengerServer implements CommandLineRunner {
                             user1 = msg.getUser1();
                             oUser1 = userRepository.findById(user1.getLogin());
                             if (oUser1.isPresent() && Objects.equals(user1.getPassword(), oUser1.get().getPassword())) {
+                               // usersMap.put(user1.getLogin(), writer);
                                 User u = oUser1.get();
-
                                 Query query = new Query().setType("ok").setUser1(u);
                                 System.out.println(Arrays.toString(query.getUser1().getChats().toArray()));
                                 writer.writeObject(query);
@@ -83,6 +88,7 @@ public class MessengerServer implements CommandLineRunner {
                                 userRepository.saveAll(Arrays.asList(user1, user2));
                                 writer.writeObject(new Query().setType("ok").setChat(chat));
                                 writer.flush();
+
 
                             } else {
                                 writer.writeObject(new Query().setType("fail"));
@@ -153,10 +159,12 @@ public class MessengerServer implements CommandLineRunner {
     public void run(String... args) {
         try {
             ServerSocket serverSocket = new ServerSocket(25000);
+            ServerSocket updateServerSocket = new ServerSocket(5000);
             System.out.println("Server Started and listening to the port 25000");
             while (true) {
                 Socket socket = serverSocket.accept();
-                new Thread(new ClientThread(socket)).start();
+                Socket updateSocket = updateServerSocket.accept();
+                new Thread(new ClientThread(socket, updateSocket)).start();
             }
         } catch (Exception e) {
             e.printStackTrace();

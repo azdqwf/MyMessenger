@@ -1,6 +1,6 @@
 package com.danila.diplom.client.fxmlControllers;
 
-import com.danila.diplom.client.Main;
+import com.danila.diplom.client.NetConnection;
 import com.danila.diplom.client.config.StageManager;
 import com.danila.diplom.entity.User;
 import javafx.fxml.FXML;
@@ -14,7 +14,7 @@ public class AuthorizationController {
 
     public User isValid(String login, String password) {
         User user = new User(login, password, "");
-        return Main.connection.authenticate(user);
+        return NetConnection.getInstance().authenticate(user);
 
     }
 

@@ -1,16 +1,12 @@
 package com.danila.diplom.client;
 
 
-import com.danila.diplom.client.fxmlControllers.ClientChatController;
 import com.danila.diplom.client.config.StageManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 
 public class Main extends Application {
-
-    public static NetConnection connection = new NetConnection();
-
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -22,7 +18,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        ClientChatController.timer.cancel();
+       //ClientChatController.timer.cancel();
         //connection.end();
 
     }
