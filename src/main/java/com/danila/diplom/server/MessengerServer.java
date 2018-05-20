@@ -53,46 +53,50 @@ public class MessengerServer implements CommandLineRunner {
                 Chat chat;
                 while (true) {
                     Query msg = (Query) reader.readObject();
-                    System.out.println(msg);
-                    updateOutputSteam.writeObject(msg);
-                    updateOutputSteam.flush();
-//                    if (msg == null) {
-//                        break;
-//                    }
+                    if (msg == null) {
+                        updateOutputSteam.writeObject(null);
+                        break;
+                    }
                     switch (msg.getType()) {
                         case "auth":
                             user1 = msg.getUser1();
                             oUser1 = userRepository.findById(user1.getLogin());
                             if (oUser1.isPresent() && Objects.equals(user1.getPassword(), oUser1.get().getPassword())) {
-                               // usersMap.put(user1.getLogin(), writer);
+                                usersMap.put(user1.getLogin(), updateOutputSteam);
                                 User u = oUser1.get();
                                 Query query = new Query().setType("ok").setUser1(u);
-                                System.out.println(Arrays.toString(query.getUser1().getChats().toArray()));
                                 writer.writeObject(query);
-                                writer.flush();
                             } else {
                                 writer.writeObject(new Query().setType("fail"));
-                                writer.flush();
                             }
                             break;
                         case "nc":
-                            oUser1 = userRepository.findById(msg.getUser1().getLogin());
-                            oUser2 = userRepository.findById(msg.getParam1());
-                            if (oUser1.isPresent() && oUser2.isPresent()) {
-                                chat = new Chat(oUser1.get().getLogin(), oUser2.get().getLogin());
-                                chatRepository.save(chat);
-                                user1 = oUser1.get();
-                                user2 = oUser2.get();
-                                user1.getChats().add(chat);
-                                user2.getChats().add(chat);
-                                userRepository.saveAll(Arrays.asList(user1, user2));
-                                writer.writeObject(new Query().setType("ok").setChat(chat));
-                                writer.flush();
+                            if (!msg.getUser1().getLogin().equals(msg.getParam1())) {
+                                oUser1 = userRepository.findById(msg.getUser1().getLogin());
+                                oUser2 = userRepository.findById(msg.getParam1());
+                                if (oUser1.isPresent() && oUser2.isPresent()) {
+                                    chat = new Chat(oUser1.get().getLogin(), oUser2.get().getLogin());
+                                    Optional<Chat> oChat1 = chatRepository.findById(chat.getUser1() + chat.getUser2());
+                                    Optional<Chat> oChat2 = chatRepository.findById(chat.getUser2() + chat.getUser1());
+                                    if (!oChat1.isPresent() && !oChat2.isPresent()) {
+                                        chatRepository.save(chat);
+                                        user1 = oUser1.get();
+                                        user2 = oUser2.get();
+                                        user1.getChats().add(chat);
+                                        user2.getChats().add(chat);
+                                        userRepository.saveAll(Arrays.asList(user1, user2));
+                                        writer.writeObject(new Query().setType("ok").setChat(chat));
+                                        ObjectOutputStream user2output = usersMap.get(user2.getLogin());
+                                        if (user2output != null) {
+                                            user2output.writeObject(new Query().setType("nc").setChat(chat));
+                                        }
+                                    } else writer.writeObject(new Query().setType("fail"));
 
-
+                                } else {
+                                    writer.writeObject(new Query().setType("fail"));
+                                }
                             } else {
                                 writer.writeObject(new Query().setType("fail"));
-                                writer.flush();
                             }
                             break;
                         case "reg":
@@ -101,10 +105,8 @@ public class MessengerServer implements CommandLineRunner {
                             if (!regUser.isPresent()) {
                                 userRepository.save(user1);
                                 writer.writeObject(new Query().setType("ok"));
-                                writer.flush();
                             } else {
                                 writer.writeObject(new Query().setType("fail"));
-                                writer.flush();
                             }
                             break;
                         case "msg":
@@ -120,10 +122,18 @@ public class MessengerServer implements CommandLineRunner {
                                 else chat.setMessages(chat.getMessages() + message);
                                 chatRepository.save(chat);
                                 writer.writeObject(new Query().setType("ok"));
-                                writer.flush();
+                                ObjectOutputStream user1output = usersMap.get(chat.getUser1());
+                                ObjectOutputStream user2output = usersMap.get(chat.getUser2());
+                                if (user1output != null) {
+                                    user1output.writeObject(new Query().setType("msg").setParam1(chat.getMessages())
+                                            .setParam2(chat.getUser1() + chat.getUser2()));
+                                }
+                                if (user2output != null) {
+                                    user2output.writeObject(new Query().setType("msg").setParam1(chat.getMessages())
+                                            .setParam2(chat.getUser1() + chat.getUser2()));
+                                }
                             } else {
                                 writer.writeObject(new Query().setType("fail"));
-                                writer.flush();
                             }
                             break;
                         case "gc":
@@ -134,12 +144,10 @@ public class MessengerServer implements CommandLineRunner {
                                 if (oChat.isPresent()) {
                                     chat = oChat.get();
                                     writer.writeObject(new Query().setType("ok").setChat(chat));
-                                    writer.flush();
                                 }
 
                             } else {
                                 writer.writeObject(new Query().setType("fail"));
-                                writer.flush();
                             }
                             break;
                     }
@@ -160,7 +168,7 @@ public class MessengerServer implements CommandLineRunner {
         try {
             ServerSocket serverSocket = new ServerSocket(25000);
             ServerSocket updateServerSocket = new ServerSocket(5000);
-            System.out.println("Server Started and listening to the port 25000");
+            System.out.println("Server Started and listening to the ports 25000, 5000");
             while (true) {
                 Socket socket = serverSocket.accept();
                 Socket updateSocket = updateServerSocket.accept();

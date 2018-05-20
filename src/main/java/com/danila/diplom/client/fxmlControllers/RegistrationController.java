@@ -1,6 +1,5 @@
 package com.danila.diplom.client.fxmlControllers;
 
-import com.danila.diplom.client.Main;
 import com.danila.diplom.client.NetConnection;
 import com.danila.diplom.client.config.StageManager;
 import com.danila.diplom.entity.User;

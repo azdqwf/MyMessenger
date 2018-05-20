@@ -1,5 +1,6 @@
 package com.danila.diplom.client;
 
+import com.danila.diplom.client.fxmlControllers.ClientChatController;
 import com.danila.diplom.entity.Chat;
 import com.danila.diplom.entity.Query;
 import com.danila.diplom.entity.User;
@@ -9,27 +10,34 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-public class NetConnection {
+
+public class NetConnection implements Runnable {
+
+
 
     private static NetConnection instance;
-
+    @Override
+    public void run() {
+        instance = new NetConnection();
+    }
     public static NetConnection getInstance() {
-        if (instance == null) instance = new NetConnection();
+        if (instance == null)
+            instance = new NetConnection();
         return instance;
     }
 
-    public Socket socket;
-    public Socket updateSocket;
+    private Socket socket;
+    private Socket updateSocket;
 
     private ObjectOutputStream objectOutputStream;
     private ObjectInputStream objectInputStream;
-    ObjectInputStream updateObjectStream;
+    private ObjectInputStream updateObjectStream;
 
 
-    public NetConnection() {
+    private NetConnection() {
 
         try {
-            socket = new Socket(InetAddress.getLocalHost(), 25000);
+            socket = new Socket("95.65.114.53", 25000);
             updateSocket = new Socket(InetAddress.getLocalHost(), 5000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
@@ -39,10 +47,8 @@ public class NetConnection {
 
     }
 
-    public boolean okOrFail(Query query) throws IOException, ClassNotFoundException {
+    private boolean okOrFail(Query query) throws IOException, ClassNotFoundException{
         objectOutputStream.writeObject(query);
-        objectOutputStream.flush();
-
         Query msg = (Query) objectInputStream.readObject();
         switch (msg.getType()) {
             case "ok":
@@ -70,7 +76,6 @@ public class NetConnection {
         try {
             Query query = new Query().setType("nc").setUser1(me).setParam1(he);
             objectOutputStream.writeObject(query);
-            objectOutputStream.flush();
 
             Query msg = (Query) objectInputStream.readObject();
             switch (msg.getType()) {
@@ -103,7 +108,6 @@ public class NetConnection {
         Query query = new Query().setType("gc").setUser1(me).setParam1(chatId);
         try {
             objectOutputStream.writeObject(query);
-            objectOutputStream.flush();
             Query response = (Query) objectInputStream.readObject();
 
             switch (response.getType()) {
@@ -126,12 +130,6 @@ public class NetConnection {
         Query query = new Query().setType("auth").setUser1(me);
         try {
             objectOutputStream.writeObject(query);
-            objectOutputStream.flush();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             Query response = (Query) objectInputStream.readObject();
             switch (response.getType()) {
                 case "ok":
@@ -147,24 +145,27 @@ public class NetConnection {
         return null;
     }
 
-    public void end() {
+    void end() {
         try {
             objectOutputStream.writeObject(null);
-            objectOutputStream.flush();
-            socket.close();
-            objectInputStream.close();
+            Thread.sleep(500);
+            updateObjectStream.close();
+            updateSocket.close();
             objectOutputStream.close();
-        } catch (IOException e) {
+            objectInputStream.close();
+            socket.close();
+
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
     }
 
+
     class UpdateListener implements Runnable {
 
         @Override
         public void run() {
-            System.out.println("th started");
             try {
                 updateObjectStream = new ObjectInputStream(updateSocket.getInputStream());
             } catch (IOException e) {
@@ -173,7 +174,15 @@ public class NetConnection {
             while (!updateSocket.isClosed()) {
                 try {
                     Query query = (Query) updateObjectStream.readObject();
-                    System.out.println(query);
+                    if (query == null) break;
+                    switch (query.getType()) {
+                        case "nc":
+                            ClientChatController.updateChatList(query.getChat());
+                            break;
+                        case "msg":
+                            ClientChatController.updateMessages(query.getParam1(), query.getParam2());
+                            break;
+                    }
                 } catch (IOException | ClassNotFoundException e) {
                     try {
                         updateSocket.close();

@@ -20,6 +20,7 @@ public class Chat implements Serializable {
     private String messages;
 
     public Chat(String user1, String user2) {
+        this.id = user1 + user2;
         this.user1 = user1;
         this.user2 = user2;
     }
