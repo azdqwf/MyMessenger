@@ -37,7 +37,7 @@ public class NetConnection implements Runnable {
     private NetConnection() {
 
         try {
-            socket = new Socket("95.65.114.53", 25000);
+            socket = new Socket(InetAddress.getLocalHost(), 25000);
             updateSocket = new Socket(InetAddress.getLocalHost(), 5000);
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectInputStream = new ObjectInputStream(socket.getInputStream());
