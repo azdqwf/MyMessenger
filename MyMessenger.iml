@@ -5,6 +5,7 @@
       <configuration>
         <fileset id="fileset" name="M" removed="false">
           <file>file://$MODULE_DIR$/src/main/java/com/danila/diplom/repository/M.java</file>
+          <file>file://$MODULE_DIR$/src/main/java/com/danila/diplom/SpringMongoConfig.java</file>
         </fileset>
       </configuration>
     </facet>

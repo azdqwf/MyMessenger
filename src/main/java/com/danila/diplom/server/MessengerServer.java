@@ -5,11 +5,9 @@ import com.danila.diplom.entity.Query;
 import com.danila.diplom.entity.User;
 import com.danila.diplom.server.repository.ChatRepository;
 import com.danila.diplom.server.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,21 +17,23 @@ import java.net.Socket;
 import java.util.*;
 
 @SpringBootApplication
-@EnableMongoRepositories(basePackages = "com.danila.diplom.server.repository")
 public class MessengerServer implements CommandLineRunner {
 
-    @Autowired
-    ChatRepository chatRepository;
-    @Autowired
-    UserRepository userRepository;
+    private ChatRepository chatRepository;
 
-    Map<String, ObjectOutputStream> usersMap = new HashMap<>();
+    private UserRepository userRepository;
+
+    public MessengerServer(ChatRepository chatRepository, UserRepository userRepository) {
+        this.chatRepository = chatRepository;
+        this.userRepository = userRepository;
+    }
+
+    private Map<String, ObjectOutputStream> usersMap = new HashMap<>();
 
 
     class ClientThread implements Runnable {
         Socket socket;
         Socket updateSocket;
-
 
         ClientThread(Socket socket, Socket updateSocket) throws IOException {
             this.socket = socket;
@@ -53,6 +53,7 @@ public class MessengerServer implements CommandLineRunner {
                 Chat chat;
                 while (true) {
                     Query msg = (Query) reader.readObject();
+                    System.out.println(msg);
                     if (msg == null) {
                         updateOutputSteam.writeObject(null);
                         break;

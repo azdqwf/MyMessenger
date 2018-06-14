@@ -13,9 +13,8 @@ import java.net.Socket;
 
 public class NetConnection implements Runnable {
 
-
-
     private static NetConnection instance;
+
     @Override
     public void run() {
         instance = new NetConnection();
@@ -35,7 +34,6 @@ public class NetConnection implements Runnable {
 
 
     private NetConnection() {
-
         try {
             socket = new Socket(InetAddress.getLocalHost(), 25000);
             updateSocket = new Socket(InetAddress.getLocalHost(), 5000);
@@ -158,7 +156,6 @@ public class NetConnection implements Runnable {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -184,11 +181,7 @@ public class NetConnection implements Runnable {
                             break;
                     }
                 } catch (IOException | ClassNotFoundException e) {
-                    try {
-                        updateSocket.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
+
                     e.printStackTrace();
                     System.out.println("fail th");
                 }

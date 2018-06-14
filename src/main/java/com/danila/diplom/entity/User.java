@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Document(collection = "users")
 public class User implements Serializable {
 
@@ -22,7 +21,7 @@ public class User implements Serializable {
     @DBRef
     private List<Chat> chats;
 
-    public User() { //for Jpa
+    public User() {
     }
 
     public User(String login, String password, String email) {
@@ -47,10 +46,6 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -59,12 +54,11 @@ public class User implements Serializable {
         if (chats != null) return chats;
         else chats = new ArrayList<>();
         return chats;
-
     }
 
     public void setChats(List<Chat> chats) {
         this.chats = chats;
-    }
+    }//getters and setters
 
     @Override
     public String toString() {

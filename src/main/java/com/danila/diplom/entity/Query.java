@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 public class Query implements Serializable {
     private static final long serialVersionUID = 7271208744095795841L;
-    String type;
-    User user1;
-    User user2;
-    String param1;
-    String param2;
-    Chat chat;
+    private String type;
+    private User user1;
+    private User user2;
+    private String param1;
+    private String param2;
+    private Chat chat;
 
     public Query() {
     }
@@ -22,7 +22,6 @@ public class Query implements Serializable {
         this.type = type;
         return this;
     }
-
     public User getUser1() {
         return user1;
     }

@@ -2,10 +2,7 @@ package com.danila.diplom.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
-
 
 @Document(collection = "chats")
 public class Chat implements Serializable {
@@ -63,5 +60,5 @@ public class Chat implements Serializable {
     @Override
     public String toString() {
         return user1 + ", " + user2;
-    }
+    }//getters and setters
 }

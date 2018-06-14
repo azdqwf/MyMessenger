@@ -35,7 +35,7 @@ public class StageManager {
             Parent root = loader.load();
             AuthorizationController controller = loader.getController();
             controller.initManager(this);
-            show(root, "Login");
+            show(root, "Authentication");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -49,7 +49,7 @@ public class StageManager {
             Parent root = loader.load();
             NewChatController controller = loader.getController();
             controller.initManager(this, me);
-            show(root, "NewChat");
+            show(root, "New chat");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -88,22 +88,18 @@ public class StageManager {
 
     private void show(final Parent rootnode, String title) {
         scene = primaryStage.getScene();
-
         if (scene == null) {
             scene = new Scene(rootnode);
         }
         scene.setRoot(rootnode);
-
         primaryStage.setTitle(title);
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
-
         try {
             primaryStage.show();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
-
 }
